@@ -8,28 +8,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import com.jpulido.util.MysqlDBConn;
+import com.jpulido.util.MySqlConnection;
 
 public class ProfesorDao {
 
     public static boolean insert(Profesor profesor, Connection con) throws SQLException {
 
         boolean result;
-        Connection connection;
-        PreparedStatement pst;
         
-        connection = MysqlDBConn.getConnection();
+        Connection connection = MySqlConnection.getConnection();
+      
+        PreparedStatement pst = connection.prepareStatement("INSERT INTO "
+                + "TB_PROFESOR (idProfesor,usuario,nombres,apellidos,fechaNacimiento) "
+                + "values (?,?,?,?,?)");
 
-        pst = connection.prepareStatement("INSERT INTO "
-                + "TB_PROFESOR (usuario,nombres,apellidos,fechaNacimiento) "
-                + "values (?,?,?,?)");
-
-        pst.setString(1, profesor.getUsuario());
-        pst.setString(2, profesor.getNombres());
-        pst.setString(3, profesor.getApellidos());
-        pst.setDate(4, new java.sql.Date(profesor.getFechaNacimiento().getTime()));
+        pst.setInt(1, profesor.getIdProfesor());
+        pst.setString(2, profesor.getUsuario());
+        pst.setString(3, profesor.getNombres());
+        pst.setString(4, profesor.getApellidos());
+        pst.setDate(5, new java.sql.Date(profesor.getFechaNacimiento().getTime()));
 
         result = pst.executeUpdate() == 1;
+        
         if (result) {
             System.out.println("Profesor registrado!!");
         } else {
@@ -41,18 +41,16 @@ public class ProfesorDao {
     }
 
     public static List<Profesor> list(Connection con) throws SQLException {
-        
-        List<Profesor> listaProfesores;
-        Connection connection;
-        PreparedStatement pst;
+               
         Profesor profesor;
         
-        connection = MysqlDBConn.getConnection();
-
-        pst = connection.prepareStatement("SELECT * FROM TB_PROFESOR");
+        Connection connection; connection = MySqlConnection.getConnection();
+        
+        PreparedStatement pst = connection.prepareStatement("SELECT * FROM TB_PROFESOR");
 
         ResultSet rs = pst.executeQuery();
-        listaProfesores = new ArrayList<Profesor>();
+        
+        List<Profesor> listaProfesores  = new ArrayList<Profesor>();
         while (rs.next()) {
 
             profesor = new Profesor();
